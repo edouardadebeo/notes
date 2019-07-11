@@ -29,6 +29,9 @@ Supposons que `user.admin` renvoit `true` ou `false` selon que l'utilisateur est
 ```ruby
 puts user.admin ? 'Welcome admin' : 'You are not authorized'
 puts user.admin && 'Welcome admin' || 'You are not authorized'
+
+puts user.name ? "Hey ${user.name}" : "Hey there..."
+puts user.name && "Hey ${user.name}" || "Hey there..."
 ```
 
 Attention car avec le système `&&/||`, si la deuxième valeur (ici '*Welcome admin*') est fausse, alors la dernière valeur est renvoyée :
