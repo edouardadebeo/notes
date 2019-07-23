@@ -106,7 +106,7 @@ En Ruby, il est possible d'uiliser la méthode `&.` pour enchaîner les déclara
 User.first&.name&.upcase
 ```
 
-Si le premier *user* n'a pas de valeur pour `name`, alors `User.first&.name` est égal à `nil` et, grpace à la *safe navigation*, le code s'arrêtera à ce moment et ne tentera pas d'éxecuter la suite. Sans la *safe navigation*, toute la ligne se serait exécutée, ce qui aurait renvoyé une erreur : `undefined method 'upcase' for nil:NilClass`.
+Si le premier *user* n'a pas de valeur pour `name`, alors `User.first&.name` est égal à `nil` et, grâce à la *safe navigation*, le code s'arrêtera à ce moment et ne tentera pas d'éxecuter la suite. Sans la *safe navigation*, toute la ligne se serait exécutée, ce qui aurait renvoyé une erreur : `undefined method 'upcase' for nil:NilClass`.
 
 S'il n'y a aucun *user*, `User.first` renvoit `nil`. À nouveau, le code s'arrêtera à ce moment et renverra `nil` plutôt qu'une erreur `undefined method 'name' for nil:NilClass`.
 
