@@ -147,10 +147,15 @@ price = response&.[](:product)&.[](:price)&.upcase
 En Ruby, il est possible d'écrire la *safe navigation* (et plus globalement les méthodes chaînées) sur plusieurs lignes :
 
 ```ruby
-value
-  &.complex_method(param1, param2, param3)
-  &.another_complex_method(param1, param2)
-  &.finally_the_ultimate_method
+products = { strawberries: 2, pineapple: 0, oranges: 4, bananas: 1 }
+
+products
+  &.select { |_product, quantity| quantity.positive? } # => { strawberries: 2, oranges: 4, bananas: 1 }
+  &.sort_by { |_product, quantity| quantity }          # => [[:bananas, 1], [:strawberries, 2], [:oranges, 4]]
+  &.reverse                                            # => [[:oranges, 4], [:strawberries, 2], [:bananas, 1]]
+  &.to_h                                               # => { oranges: 3, strawberries: 2, bananas: 1 }
+  
+# => { oranges: 3, strawberries: 2, bananas: 1 }
 ```
 
 En Ruby, écrire les conditions sur plusieurs lignes en regroupant les && ensemble
