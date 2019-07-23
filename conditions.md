@@ -149,7 +149,7 @@ Créer des méthodes intermédiaires pour que les conditions soient nommées et 
 Sans méthodes intermédiaires
 
 ```js
-if (number % 2 === 0 && (user.email || user.phone || user.mobile) { // que teste-t-on ?
+if (number % 2 === 0 && (user.email || user.phone || user.mobile)) { // que teste-t-on ?
   // do something
 }
 ```
@@ -157,10 +157,7 @@ if (number % 2 === 0 && (user.email || user.phone || user.mobile) { // que teste
 Avec méthodes intermédiaires
 
 ```js
-// return true if the number is even
 const isEven = number => number % 2 === 0
-
-// return true if the user can be reach by mail, phone or mobile
 const isReachable = user => user.email || user.phone || user.mobile
 
 if (isEven(number) && isReachable(user)) { // les conditions sont explicites
