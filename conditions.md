@@ -1,21 +1,22 @@
 ## True / False
 
-En Ruby, tout est assimilable à `true` (*truthy*) en dehors de `nil` qui est assimilable à `false` (*falsy*) et, évidemment, de `false`lui-même :
+En Ruby, tout est assimilable à `true` (*truthy*) en dehors de `nil` qui est assimilable à `false` (*falsy*) et, évidemment, de `false` lui-même :
 
 ```ruby
 def can_you_trust?(value)
-  value ? true : false
+  value ? 'truthy' : 'falsy'
 end
 
-can_you_trust? true  # => true
-can_you_trust? ''    # => true
-can_you_trust? 'foo' # => true
-can_you_trust? 0     # => true
-can_you_trust? 1     # => true
-can_you_trust? []    # => true
+can_you_trust? true      # => truthy
+can_you_trust? ''        # => truthy
+can_you_trust? 'foo'     # => truthy
+can_you_trust? 0         # => truthy
+can_you_trust? 1         # => truthy
+can_you_trust? []        # => truthy
+can_you_trust? User.last # => truthy (if user exists)
 
-can_you_trust? false # => false
-can_you_trust? nil   # => false
+can_you_trust? false     # => falsy
+can_you_trust? nil       # => falsy
 ```
 
 Attention ! *truthy* ne veut pas dire que la valeur est *égale* à `true`, mais qu'elle peut être utilisée comme telle dans une condition :
@@ -30,16 +31,17 @@ Note : dans d'autres langages, les valeur `0` et `''` sont *falsy*, par exemple 
 
 ```js
 function can_you_trust(value) {
-  return value ? true : false
+  return value ? 'truthy' : 'falsy'
 }
 
-can_you_trust(1)         # => true
-can_you_trust([])        # => true
-can_you_trust({})        # => true
-can_you_trust(0)         # => false
-can_you_trust('')        # => false
-can_you_trust(null)      # => false
-can_you_trust(undefined) # => false
+can_you_trust(1)         # => truthy
+can_you_trust([])        # => truthy
+can_you_trust({})        # => truthy
+
+can_you_trust(0)         # => falsy
+can_you_trust('')        # => falsy
+can_you_trust(null)      # => falsy
+can_you_trust(undefined) # => falsy
 ```
 
 ## Opérateurs logiques
@@ -52,19 +54,23 @@ En Ruby :
 
 ```ruby
 0 && 1 && 2 && 3 # => 3 (toutes les valeurs sont truthy)
-0 || 1 || false # => 1 (0 est la première valeur truthy)
 1 && nil && 3 && false => # nil (nil est la première valeur falsy)
+0 || 1 || false # => 1 (0 est la première valeur truthy)
+false || nil # => nil (toutes les valeurs sont falsy)
+nil || false # => false (toutes les valeurs sont falsy)
 ```
 
 En Javascript :
 
 ```js
 0 && 1 && 2 && 3 // => 0 (0 est falsy)
-0 || 1 || false // => 1 (1 est la première valeur truthy)
 1 && null && 3 && false // => null (null est la première valeur falsy)
+0 || 1 || false // => 1 (1 est la première valeur truthy)
+null || undefined || 0 // => 0 (toutes les valeurs sont falsy)
+0 || undefined || null // => null (toutes les valeurs sont falsy)
 ```
 
-L'opérateur `&&` a la priorité sur `||`, tout comme en mathématique les opérations `*` et `/` ont la priorité sur les opérations `+` et `-`. Les écritures ci-dessous sont donc équivalentes :
+L'opérateur `&&` a la priorité sur `||`, tout comme en mathématique les opérateurss `*` et `/` ont la priorité sur les opérateurs `+` et `-`. Les écritures ci-dessous sont donc équivalentes :
 
 ```ruby
 a + (b * c) - (d / e)
@@ -74,19 +80,19 @@ a || (b && c) || (d && e)
 a || b && c || d && e
 ```
 
-Il est néanmoins conseillé de laisser les parenthèses pour la lisibilité du code.
-
 ## Usages
 
-Il faut éviter d'utiliser les booléans pour enchaîner les actions sauf si l'on est sûre de leur valeur de retour. Par exemple, si l'on écrit un code qui permet de créer un utilisateur et de lui envoyer un mail de bienvenue, ou de lui retourner une erreur si la création a échoué :
+Il faut éviter d'utiliser les booléans pour enchaîner les actions sauf si l'on est sûr de leur valeur de retour. Par exemple, si l'on écrit un code qui permet de créer un utilisateur puis, si la création a fonctionné, de lui envoyer un mail de bienvenue, ou de lui retourner une erreur si la création a échoué :
+
+(note : `User.create` renvoit le `user`, donc *truthy*, ou `false` selon que la création ait fonctionné ou non)
 
 ```ruby
 User.create(params) && send_welcome_mail || render_error
 ```
 
-Sur le papier, le code fonctionne. Or, si `send_welcome_mail` peut retourner `false` (par exemple en cas d'échec de l'envoie du mail), alors la première partie `User.create(params) && send_welcome_mail` sera `false` donc la partie ) droite `render_error` sera exécuter, alors que l'utilisateur a bien été créé.
+Si `send_welcome_mail` retourne `false` (par exemple en cas d'échec de l'envoie du mail), alors la première partie `User.create(params) && send_welcome_mail` sera `false` donc la partie à droite `render_error` sera exécutée, alors que l'utilisateur a bien été créé.
 
-Dans ce cas, il faut privilégier l'écriture suivante :
+Il faut donc mieux privilégier l'écriture suivante :
 
 ```ruby
 User.create(params) ? send_welcome_mail : render_error
@@ -100,9 +106,9 @@ En Ruby, il est possible d'uiliser la méthode `&.` pour enchaîner les déclara
 User.first&.name&.upcase
 ```
 
-Si le premier utilisateur n'a pas de valeur pour `name`, alors `User.first&.name` est égal à `nil` et, grpace à la *safe navigation*, le code s'arrêtera à ce moment et ne tentera pas d'éxecuter la suite. Sans la *safe navigation*, toute la ligne se serait exécutée, ce qui aurait renvoyé une erreur : `undefined method 'upcase' for nil:NilClass`.
+Si le premier *user* n'a pas de valeur pour `name`, alors `User.first&.name` est égal à `nil` et, grpace à la *safe navigation*, le code s'arrêtera à ce moment et ne tentera pas d'éxecuter la suite. Sans la *safe navigation*, toute la ligne se serait exécutée, ce qui aurait renvoyé une erreur : `undefined method 'upcase' for nil:NilClass`.
 
-S'il n'y a aucun utilisateur, `User.first` renvoit `nil`. À nouveau, le code s'arrêtera à ce moment et renverra `nil` plutôt qu'une erreur `undefined method 'name' for nil:NilClass`.
+S'il n'y a aucun *user*, `User.first` renvoit `nil`. À nouveau, le code s'arrêtera à ce moment et renverra `nil` plutôt qu'une erreur `undefined method 'name' for nil:NilClass`.
 
 La *safe navigation* et les opérateurs logiques permettent de rédiger des codes simples :
 
@@ -110,11 +116,14 @@ La *safe navigation* et les opérateurs logiques permettent de rédiger des code
 username = user ? user.name&.upcase || 'ANONYME' : nil
 ```
 
-Avec le code ci-dessus, s'il n'y a pas d'utilisateur, `nil` est renvoyé (avec le ternaire), sinon, s'il n'a pas de `name`, `ANONYME` est retourné (avec l'opérateur `||`), sinon, le nom de l'utilisateur en lettres capitales est retourné.
+Avec le code ci-dessus :
+* s'il n'y a aucun *user*, `nil` est renvoyé (avec le ternaire) ;
+* sinon, si le *user* n'a pas de valeur pour `name`, `ANONYME` est retourné (avec l'opérateur `||`) ;
+* sinon, le nom de l'utilisateur en lettres capitales est retourné.
 
-La *safe navigation* ne doit être utilisée que lorsque la valeur peut être testée. Par exemple, `User` ne peut pas être *truthy* ou *falsy* donc on n'écrira jamais `User&.first` !
+La *safe navigation* ne doit être utilisée que lorsque la valeur peut être testée (être *truthy* ou *falsy*). Par exemple, `User` ne peut pas être *truthy* ou *falsy* donc on n'écrira jamais `User&.first` !
 
-Dans le cas des `hash`, pour tester l'existence de la clé, il faut écrire de la manière suivante :
+Dans le cas d'un `hash`, pour tester l'existence de la clé, il faut écrire de la manière suivante :
 
 ```ruby
 response = {
@@ -130,19 +139,18 @@ price = response&.[](:product)&.[](:price)&.upcase
 ```
 
 * `name` renverra `JOHN` car `response[:user][:name]` existe ;
-* `city` renverra `nil` car la clé `city` n'existe pas dans les propriétés de `address` ;
-* `price` renverra `nil` car la clé `product` n'existe pas dans les propriétés de `response`.
+* `city` renverra `nil` car `response[:address]` existe mais `response[:address][:city]` n'existe pas ;
+* `price` renverra `nil` car`response[:product]` n'existe pas.
 
 ## Conseils d'écritures
 
-Quelques astuces pour rendre le code plus lisible.
-
-En Ruby, écrire la *safe navigation* (et plus globalement les méthodes chaînées) sur plusieurs lignes :
+En Ruby, il est possible d'écrire la *safe navigation* (et plus globalement les méthodes chaînées) sur plusieurs lignes :
 
 ```ruby
-response
-  &.[](:user)
-  &.[](:name)
+value
+  &.complex_method param1, param2, param3
+  &.another_complex_method param1, param2
+  &.finally_the_ultimate_method
 ```
 
 En Ruby, écrire les conditions sur plusieurs lignes en regroupant les && ensemble
