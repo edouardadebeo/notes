@@ -150,10 +150,10 @@ En Ruby, il est possible d'écrire la *safe navigation* (et plus globalement les
 products = { strawberries: 2, pineapple: 0, oranges: 4, bananas: 1 }
 
 products
-  &.select { |_product, quantity| quantity.positive? } # => { strawberries: 2, oranges: 4, bananas: 1 }
-  &.sort_by { |_product, quantity| quantity }          # => [[:bananas, 1], [:strawberries, 2], [:oranges, 4]]
-  &.reverse                                            # => [[:oranges, 4], [:strawberries, 2], [:bananas, 1]]
-  &.to_h                                               # => { oranges: 3, strawberries: 2, bananas: 1 }
+  &.select { |_, qty| qty.positive? } # => { strawberries: 2, oranges: 4, bananas: 1 }
+  &.sort_by { |_, qty| qty }          # => [[:bananas, 1], [:strawberries, 2], [:oranges, 4]]
+  &.reverse                           # => [[:oranges, 4], [:strawberries, 2], [:bananas, 1]]
+  &.to_h                              # => { oranges: 3, strawberries: 2, bananas: 1 }
   
 # => { oranges: 3, strawberries: 2, bananas: 1 }
 ```
@@ -161,12 +161,12 @@ products
 En Ruby, écrire les conditions sur plusieurs lignes en regroupant les && ensemble
 
 ```ruby
-discount = is_student && is_younger_than_25 ||
-           is_handicapped ||
-           is_a_woman && is_pregnant ||
-           is_older_than_70
+discount? = student? && younger_than?(25) ||
+            handicapped? ||
+            woman? && pregnant? ||
+            older_than?(70)
 
-price = discount ? 25 : 45
+price = discount? ? 25 : 45
 ```
 
 En Javascript, écrire les ternaires sur plusieurs lignes s'ils sont longs :
@@ -177,8 +177,8 @@ a ? b : c
 
 // long => multilines
 very_long_condition
-  ? very_long_if_truthy_action
-  : very_long_if_falsy_action
+  ? very_long_if_truthy_action(params)
+  : very_long_if_falsy_action(other_params)
 ```
 
 En Javascript, utiliser le fait que `0` soit *falsy* pour tester si un tableau contient des valeurs :
