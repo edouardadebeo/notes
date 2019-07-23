@@ -148,8 +148,8 @@ En Ruby, il est possible d'écrire la *safe navigation* (et plus globalement les
 
 ```ruby
 value
-  &.complex_method param1, param2, param3
-  &.another_complex_method param1, param2
+  &.complex_method(param1, param2, param3)
+  &.another_complex_method(param1, param2)
   &.finally_the_ultimate_method
 ```
 
