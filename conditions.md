@@ -179,7 +179,7 @@ products
 # => { oranges: 3, strawberries: 2, bananas: 1 }
 ```
 
-En Ruby, écrire les conditions sur plusieurs lignes en regroupant les && ensemble
+En Ruby, écrire les conditions sur plusieurs lignes en regroupant les `&&` sur une même ligne :
 
 ```ruby
 discount? = student? && younger_than?(25) ||
