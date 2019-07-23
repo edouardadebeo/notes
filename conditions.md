@@ -40,14 +40,6 @@ can_you_trust(0)         # => false
 can_you_trust('')        # => false
 can_you_trust(null)      # => false
 can_you_trust(undefined) # => false
-
-Techniques associées :
-
-Vérifier qu'un tableau a des valeurs :
-array.length ? 'le tableau contient des valeurs' : 'le tableau est vide'
-
-Vérifier qu'il y a un nombre et autoriser zéro avec l'interpolation :
-`${number}` ? 'il y a une valeur (zéro compris)' : 'la valeur est false, blank, null ou undefined'
 ```
 
 ## Opérateurs logiques
@@ -61,49 +53,127 @@ En Ruby :
 ```ruby
 0 && 1 && 2 && 3 # => 3 (toutes les valeurs sont truthy)
 0 || 1 || false # => 1 (0 est la première valeur truthy)
-1 && nil && 3 && false => nil # (nil est la première valeur falsy)
+1 && nil && 3 && false => # nil (nil est la première valeur falsy)
 ```
 
 En Javascript :
 
 ```js
-0 && 1 && 2 && 3 # => 3 (0 est falsy)
-0 || 1 || false # => 1 (1 est la première valeur truthy)
-1 && null && 3 && false => nil # (null est la première valeur falsy)
+0 && 1 && 2 && 3 // => 0 (0 est falsy)
+0 || 1 || false // => 1 (1 est la première valeur truthy)
+1 && null && 3 && false // => null (null est la première valeur falsy)
 ```
 
-A noter que `&&` a la priorité sur `||`, tout comme en mathématique les opérations `*` et `/` ont la priorité sur les opérations `+` et `-`. Les écritures ci-dessous sont donc équivalentes :
+L'opérateur `&&` a la priorité sur `||`, tout comme en mathématique les opérations `*` et `/` ont la priorité sur les opérations `+` et `-`. Les écritures ci-dessous sont donc équivalentes :
 
 ```ruby
-foo || (bar && baz) || (gul && zed)
-foo || bar && baz || gul && zed
+a + (b * c) - (d / e)
+a + b * c - d / e
+
+a || (b && c) || (d && e)
+a || b && c || d && e
 ```
 
-***
+Il est néanmoins conseillé de laisser les parenthèses pour la lisibilité du code.
 
-Il est préférable d'écrire en ternaire les conditions, mais si cela n'est pas possible, alors le recours aux booléans est envisagable.
+## Usages
 
-Supposons que `user.admin` renvoit `true` ou `false` selon que l'utilisateur est le rôle d'administrateur ou non, et que `user.name` renvoit le nom de l'utilisateur (`nil` si celui-ci manque).
+Il faut éviter d'utiliser les booléans pour enchaîner les actions sauf si l'on est sûre de leur valeur de retour. Par exemple, si l'on écrit un code qui permet de créer un utilisateur et de lui envoyer un mail de bienvenue, ou de lui retourner une erreur si la création a échoué :
 
 ```ruby
-puts user.admin ? 'Welcome admin' : 'You are not authorized'
-puts user.admin && 'Welcome admin' || 'You are not authorized'
-
-puts user.name ? "Hey ${user.name}" : "Hey there..."
-puts user.name && "Hey ${user.name}" || "Hey there..."
+User.create(params) && send_welcome_mail || render_error
 ```
 
-Attention car avec le système `&&/||`, si la deuxième valeur (ici '*Welcome admin*') est fausse, alors la dernière valeur est renvoyée :
+Sur le papier, le code fonctionne. Or, si `send_welcome_mail` peut retourner `false` (par exemple en cas d'échec de l'envoie du mail), alors la première partie `User.create(params) && send_welcome_mail` sera `false` donc la partie ) droite `render_error` sera exécuter, alors que l'utilisateur a bien été créé.
+
+Dans ce cas, il faut privilégier l'écriture suivante :
 
 ```ruby
-access_forbidden = user.admin ? false : true # renvoit false pour un administrateur (l'accès n'est pas interdit)
-access_forbidden = user.admin && false || true # renvoit true à cause du || true
+User.create(params) ? send_welcome_mail : render_error
 ```
 
-L'usage des booléans est en réalité utile quand les conditions sont plus complexes, par exemple :
+## Safe navigation
+
+En Ruby, il est possible d'uiliser la méthode `&.` pour enchaîner les déclarations et retourner directement la valeur si elle est *falsy*. Par exemple :
 
 ```ruby
-test = foo > 5 && foo < 10 ||
-       foo == 0 && bar == 10 ||
-       bar == foo
+User.first&.name&.upcase
+```
+
+Si le premier utilisateur n'a pas de valeur pour `name`, alors `User.first&.name` est égal à `nil` et, grpace à la *safe navigation*, le code s'arrêtera à ce moment et ne tentera pas d'éxecuter la suite. Sans la *safe navigation*, toute la ligne se serait exécutée, ce qui aurait renvoyé une erreur : `undefined method 'upcase' for nil:NilClass`.
+
+S'il n'y a aucun utilisateur, `User.first` renvoit `nil`. À nouveau, le code s'arrêtera à ce moment et renverra `nil` plutôt qu'une erreur `undefined method 'name' for nil:NilClass`.
+
+La *safe navigation* et les opérateurs logiques permettent de rédiger des codes simples :
+
+```ruby
+username = user ? user.name&.upcase || 'ANONYME' : nil
+```
+
+Avec le code ci-dessus, s'il n'y a pas d'utilisateur, `nil` est renvoyé (avec le ternaire), sinon, s'il n'a pas de `name`, `ANONYME` est retourné (avec l'opérateur `||`), sinon, le nom de l'utilisateur en lettres capitales est retourné.
+
+La *safe navigation* ne doit être utilisée que lorsque la valeur peut être testée. Par exemple, `User` ne peut pas être *truthy* ou *falsy* donc on n'écrira jamais `User&.first` !
+
+Dans le cas des `hash`, pour tester l'existence de la clé, il faut écrire de la manière suivante :
+
+```ruby
+response = {
+  user: {
+    name: 'John'
+  },
+  address: {}
+}
+
+name = response&.[](:user)&.[](:name)&.upcase
+city = response&.[](:address)&.[](:city)&.upcase
+price = response&.[](:product)&.[](:price)&.upcase
+```
+
+* `name` renverra `JOHN` car `response[:user][:name]` existe ;
+* `city` renverra `nil` car la clé `city` n'existe pas dans les propriétés de `address` ;
+* `price` renverra `nil` car la clé `product` n'existe pas dans les propriétés de `response`.
+
+## Conseils d'écritures
+
+Quelques astuces pour rendre le code plus lisible.
+
+En Ruby, écrire la *safe navigation* (et plus globalement les méthodes chaînées) sur plusieurs lignes :
+
+```ruby
+response
+  &.[](:user)
+  &.[](:name)
+```
+
+En Ruby, écrire les conditions sur plusieurs lignes en regroupant les && ensemble
+
+```ruby
+discount = is_student && is_younger_than_25 ||
+           is_handicapped ||
+           is_a_woman && is_pregnant ||
+           is_older_than_70
+
+price = discount ? 25 : 45
+```
+
+En Javascript, écrire les ternaires sur plusieurs lignes s'ils sont longs :
+
+```js
+// short => inline
+a ? b : c
+
+// long => multilines
+very_long_condition
+  ? very_long_if_truthy_action
+  : very_long_if_falsy_action
+```
+
+En Javascript, utiliser le fait que `0` soit *falsy* pour tester si un tableau contient des valeurs :
+
+```js
+const first_array = [1, 2, 3]
+const second_array = []
+
+first_array.length ? 'array contains values' : 'array is empty'  // => array contains values
+second_array.length ? 'array contains values' : 'array is empty' // => array is empty
 ```
