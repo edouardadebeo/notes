@@ -1,25 +1,75 @@
-En Ruby, tout est assimilable à `true` en dehors de `false` et `nil` :
+## True / False
+
+En Ruby, tout est assimilable à `true` (*truthy*) en dehors de `nil` qui est assimilable à `false` (*falsy*) et, évidemment, de `false`lui-même :
 
 ```ruby
-true  ? true : false # => true
-false ? true : false # => false
+def can_you_trust?(value)
+  value ? true : false
+end
 
-""    ? true : false # => true
-"foo" ? true : false # => true
-0     ? true : false # => true
-1     ? true : false # => true
-[]    ? true : false # => true
+can_you_trust? true  # => true
+can_you_trust? ''    # => true
+can_you_trust? 'foo' # => true
+can_you_trust? 0     # => true
+can_you_trust? 1     # => true
+can_you_trust? []    # => true
 
-nil   ? true : false # => false
+can_you_trust? false # => false
+can_you_trust? nil   # => false
 ```
 
-La dernière valeur calculée sera toujours renvoyée. Avec `&&`, il s'agira de la dernière valeur si elles sont toutes vraies ou de la première valeur fausse rencontrée. Avec `||` il s'agira de la première valeur vraie rencontrée.
+Attention ! *truthy* ne veut pas dire que la valeur est *égale* à `true`, mais qu'elle peut être utilisée comme telle dans une condition :
 
 ```ruby
-1 && 2 && 3 # => 3
-1 || 2 || 3 # => 1
-1 && nil && 3 => nil
-1 && nil && 3 || "foo" => "foo"
+1 == true  # => false
+1 == false # => false
+1 ? 'truthy' : 'falsy' # => truthy
+```
+
+Note : dans d'autres langages, les valeur `0` et `''` sont *falsy*, par exemple en Javascript :
+
+```js
+function can_you_trust(value) {
+  return value ? true : false
+}
+
+can_you_trust(1)         # => true
+can_you_trust([])        # => true
+can_you_trust({})        # => true
+can_you_trust(0)         # => false
+can_you_trust('')        # => false
+can_you_trust(null)      # => false
+can_you_trust(undefined) # => false
+
+Techniques associées :
+
+Vérifier qu'un tableau a des valeurs :
+array.length ? 'le tableau contient des valeurs' : 'le tableau est vide'
+
+Vérifier qu'il y a un nombre et autoriser zéro avec l'interpolation :
+`${number}` ? 'il y a une valeur (zéro compris)' : 'la valeur est false, blank, null ou undefined'
+```
+
+## Opérateurs logiques
+
+Lorsqu'on utilise les opérateurs logiques `&&` et `||`, une et une seule des valeurs testées sera renvoyée :
+* avec `&&`, la valeur renvoyée sera la première valeur *falsy* ou la dernière valeur si elles sont toutes *truthy* ;
+* avec `||`, la valeur renvoyée sera la première valeur *truthy* ou la dernière valeur si elles sont toutes *falsy*.
+
+En Ruby :
+
+```ruby
+0 && 1 && 2 && 3 # => 3 (toutes les valeurs sont truthy)
+0 || 1 || false # => 1 (0 est la première valeur truthy)
+1 && nil && 3 && false => nil # (nil est la première valeur falsy)
+```
+
+En Javascript :
+
+```js
+0 && 1 && 2 && 3 # => 3 (0 est falsy)
+0 || 1 || false # => 1 (1 est la première valeur truthy)
+1 && null && 3 && false => nil # (null est la première valeur falsy)
 ```
 
 A noter que `&&` a la priorité sur `||`, tout comme en mathématique les opérations `*` et `/` ont la priorité sur les opérations `+` et `-`. Les écritures ci-dessous sont donc équivalentes :
