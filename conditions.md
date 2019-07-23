@@ -146,7 +146,7 @@ price = response&.[](:product)&.[](:price)&.upcase
 
 Créer des méthodes intermédiaires pour que les conditions soient nommées et que leur sens soit directement compris :
 
-Sans méthodes intermédiaires
+*sans méthodes intermédiaires*
 
 ```js
 if (number % 2 === 0 && (user.email || user.phone || user.mobile)) { // que teste-t-on ?
@@ -154,7 +154,7 @@ if (number % 2 === 0 && (user.email || user.phone || user.mobile)) { // que test
 }
 ```
 
-Avec méthodes intermédiaires
+*avec méthodes intermédiaires*
 
 ```js
 const isEven = number => number % 2 === 0
