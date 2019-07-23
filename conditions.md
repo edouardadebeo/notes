@@ -53,7 +53,7 @@ Lorsqu'on utilise les opérateurs logiques `&&` et `||`, une et une seule des va
 En Ruby :
 
 ```ruby
-0 && 1 && 2 && 3       # => 3     (toutes les valeurs sont truthy)
+1 && 2 && 3            # => 3     (toutes les valeurs sont truthy)
 1 && nil && 3 && false # => nil   (nil est la première valeur falsy)
 0 || 1 || false        # => 1     (0 est la première valeur truthy)
 false || nil           # => nil   (toutes les valeurs sont falsy)
@@ -63,7 +63,7 @@ nil || false           # => false (toutes les valeurs sont falsy)
 En Javascript :
 
 ```js
-0 && 1 && 2 && 3        // => 0    (0 est falsy)
+1 && 2 && 3             // => 3    (toutes les valeurs sont truthy)
 1 && null && 3 && false // => null (null est la première valeur falsy)
 0 || 1 || false         // => 1    (1 est la première valeur truthy)
 null || undefined || 0  // => 0    (toutes les valeurs sont falsy)
