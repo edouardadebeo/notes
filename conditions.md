@@ -144,18 +144,26 @@ price = response&.[](:product)&.[](:price)&.upcase
 
 ## Conseils d'écritures
 
-Créer des méthodes intermédiaires pour que les conditions soient nommées et que leur sens soient directement compris :
+Créer des méthodes intermédiaires pour que les conditions soient nommées et que leur sens soit directement compris :
+
+Sans méthodes intermédiaires
 
 ```js
-// sans méthode intermédiaire
-if (number % 2 === 0) { // que teste-t-on ?
+if (number % 2 === 0 && (user.email || user.phone || user.mobile) { // que teste-t-on ?
   // do something
 }
+```
 
-// avec méthode intermédiaire
+Avec méthodes intermédiaires
+
+```js
+// return true if the number is even
 const isEven = number => number % 2 === 0
 
-if (isEven(number)) { // la condition est exiplique
+// return true if the user can be reach by mail, phone or mobile
+const isReachable = user => user.email || user.phone || user.mobile
+
+if (isEven(number) && isReachable(user)) { // les conditions sont explicites
   // do something
 }
 ```
