@@ -106,9 +106,9 @@ En Ruby, il est possible d'uiliser la méthode `&.` pour enchaîner les déclara
 User.first&.name&.upcase
 ```
 
-Si le premier *user* n'a pas de valeur pour `name`, alors `User.first&.name` est égal à `nil` et, grâce à la *safe navigation*, le code s'arrêtera à ce moment et ne tentera pas d'éxecuter la suite. Sans la *safe navigation*, toute la ligne se serait exécutée, ce qui aurait renvoyé une erreur : `undefined method 'upcase' for nil:NilClass`.
+Si le premier *user* n'a pas de valeur pour `name`, alors `User.first&.name` est égal à `nil` et, grâce à la *safe navigation*, le code s'arrêtera à ce moment et ne tentera pas d'éxecuter la suite. Sans la *safe navigation*, toute la ligne se serait exécutée, ce qui aurait levé une exception : `undefined method 'upcase' for nil:NilClass`.
 
-S'il n'y a aucun *user*, `User.first` renvoit `nil`. À nouveau, le code s'arrêtera à ce moment et renverra `nil` plutôt qu'une erreur `undefined method 'name' for nil:NilClass`.
+S'il n'y a aucun *user*, `User.first` renvoit `nil`. À nouveau, le code s'arrêtera à ce moment et renverra `nil` plutôt que de lever une exception `undefined method 'name' for nil:NilClass`.
 
 La *safe navigation* et les opérateurs logiques permettent de rédiger des codes simples :
 
@@ -143,6 +143,22 @@ price = response&.[](:product)&.[](:price)&.upcase
 * `price` renverra `nil` car`response[:product]` n'existe pas.
 
 ## Conseils d'écritures
+
+Créer des méthodes intermédiaires pour que les conditions soient nommées et que leur sens soient directement compris :
+
+```js
+// sans méthode intermédiaire
+if (number % 2 === 0) { // que teste-t-on ?
+  // do something
+}
+
+// avec méthode intermédiaire
+const isEven = number => number % 2 === 0
+
+if (isEven(number)) { // la condition est exiplique
+  // do something
+}
+```
 
 En Ruby, il est possible d'écrire la *safe navigation* (et plus globalement les méthodes chaînées) sur plusieurs lignes :
 
