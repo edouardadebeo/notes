@@ -80,7 +80,7 @@ a || (b && c) || (d && e)
 a || b && c || d && e
 ```
 
-## Usages
+## Booléans VS ternaires
 
 Il faut éviter d'utiliser les booléans pour enchaîner les actions sauf si l'on est sûr de leur valeur de retour. Par exemple, si l'on écrit un code qui permet de créer un utilisateur puis, si la création a fonctionné, de lui envoyer un mail de bienvenue, ou de lui retourner une erreur si la création a échoué :
 
