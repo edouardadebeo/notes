@@ -1,4 +1,4 @@
-## Editeur de document // Drag and drop des items
+## Drag and drop des items
 
 Possibilité de créer un nouvel élément en sélectionnant l'item dans une liste et en le glissant dans la page où l'élément doit être intégré. Possibilité de déplacer un élément déjà créé de la même manière.
 
@@ -26,7 +26,7 @@ L'utilisateur sélectionne cet élément nouvellement crée et, sans lâché le 
 
 ---
 
-## Editeur de document // Copie du style
+## Copie du style
 
 Possibilité de copier le style d'un autre élément.
 
