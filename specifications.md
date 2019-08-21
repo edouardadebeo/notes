@@ -36,7 +36,7 @@ L'utilisateur sélectionne l'élément A. Il clique sur l'icône de pipette dans
 
 **Inspirations :**
 
--
+\-
 
 **Spécificités prioritaires :**
 
@@ -46,4 +46,4 @@ L'utilisateur sélectionne l'élément A. Il clique sur l'icône de pipette dans
 
 **Spécificités secondaires :**
 
--
+\-
